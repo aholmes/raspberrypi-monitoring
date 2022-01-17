@@ -4,6 +4,7 @@ import sys
 import time
 import logging
 import json
+import re
 from os import getenv
 from prometheus_client import Gauge, start_http_server
 from gpiozero import OutputDevice
@@ -62,15 +63,32 @@ class PiAwareWeather:
     _weather_argument: str
     _weather_selections: weather.Selections
 
+    _re_temperature = re.compile(r"^\s+Temperature: ([0-9]+\.[0-9]) F", re.MULTILINE)
+    _re_humidity = re.compile(r"^\s+Relative Humidity: ([0-9]+)%", re.MULTILINE)
+    _re_winddirection = re.compile(r"^\s+Wind:.+\(([0-9]+) degrees\)", re.MULTILINE)
+    _re_windspeed = re.compile(r"^\s+Wind:.+ at ([0-9]+) MPH", re.MULTILINE)
+    _re_conditions = re.compile(r"^\s+Sky conditions: (.+)$", re.MULTILINE)
+
     def __init__(self):
+        self._gauge = Gauge("weather", "Weather", ["metric"])
         location_config = dotenv_values("/var/cache/piaware/location.env")
         latitude = location_config['PIAWARE_LAT']
         longitude = location_config['PIAWARE_LON']
         self._weather_argument = f"{latitude},{longitude}"
         self._weather_selections = weather.Selections()
 
-    def _set_gauge(self):
-        pass
+    def _set_gauge(self,
+        temperature: float,
+        humidity: int,
+        winddirection: int,
+        windspeed: int,
+        conditions: str
+    ):
+        self._gauge.labels(metric="temperature").set(temperature)
+        self._gauge.labels(metric="humidity").set(humidity)
+        self._gauge.labels(metric="winddirection").set(winddirection)
+        self._gauge.labels(metric="windspeed").set(windspeed)
+        self._gauge.labels(metric="conditions").set(0) # TODO this will need to be an enum as prometheus expects numeric metric values
 
     def read_weather(self):
         argument = self._weather_argument
@@ -90,26 +108,32 @@ class PiAwareWeather:
             cacheage=selections.getint("cacheage"),
             cachedir=selections.get("cachedir")
         ).strip()
-
-        print(metar)
-
+        
+        self._set_gauge(
+            self._re_temperature.findall(metar)[0],
+            self._re_humidity.findall(metar)[0],
+            self._re_winddirection.findall(metar)[0],
+            self._re_windspeed.findall(metar)[0],
+            self._re_conditions.findall(metar)[0]
+        )
 
     
 
 if __name__ == "__main__":
-#    fan = Fan(gpio_pin=14)
-#    piaware = PiAware(aircraft_json_path="/run/dump1090-fa/aircraft.json")
+    fan = Fan(gpio_pin=14)
+    piaware = PiAware(aircraft_json_path="/run/dump1090-fa/aircraft.json")
     piaware_weather = PiAwareWeather()
 
     piaware_weather.read_weather()
 
-#    # Expose metrics
-#    metrics_port = 9200
-#    start_http_server(metrics_port)
-#    print("Serving sensor metrics on :{}".format(metrics_port))
-#    log.info("Serving sensor metrics on :{}".format(metrics_port))
-#
-#    while True:
-#        fan.read_fan_state()
-#        piaware.read_total_aircraft()
-#        time.sleep(SLEEP_INTERVAL)
+    # Expose metrics
+    metrics_port = 9200
+    start_http_server(metrics_port)
+    print("Serving sensor metrics on :{}".format(metrics_port))
+    log.info("Serving sensor metrics on :{}".format(metrics_port))
+
+    while True:
+        fan.read_fan_state()
+        piaware.read_total_aircraft()
+        piaware_weather.read_weather()
+        time.sleep(SLEEP_INTERVAL)
