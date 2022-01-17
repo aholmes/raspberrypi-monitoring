@@ -113,7 +113,7 @@ class PiAwareWeather:
         humidity = 0
         winddirection = 0
         windspeed = 0
-        conditions = 0
+        conditions = ''
 
         try:
             temperature = self._re_temperature.findall(metar)[0]
