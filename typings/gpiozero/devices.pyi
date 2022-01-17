@@ -105,7 +105,7 @@ class Device(ValuesMixin, GPIOBase):
         ...
     
     @property
-    def value(self):
+    def value(self) -> int:
         """
         Returns a value representing the device's state. Frequently, this is a
         boolean value, or a number between 0 and 1 but some devices use larger

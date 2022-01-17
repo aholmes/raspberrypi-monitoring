@@ -60,7 +60,7 @@ class OutputDevice(SourceMixin, GPIODevice):
         ...
     
     @property
-    def value(self):
+    def value(self) -> int:
         """
         Returns 1 if the device is currently active and 0 otherwise. Setting
         this property changes the state of the device.
@@ -68,7 +68,7 @@ class OutputDevice(SourceMixin, GPIODevice):
         ...
     
     @value.setter
-    def value(self, value): # -> None:
+    def value(self, value: int) -> None:
         ...
     
     @property

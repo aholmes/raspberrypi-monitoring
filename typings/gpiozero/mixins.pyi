@@ -295,7 +295,7 @@ class GPIOQueue(GPIOThread):
         ...
     
     @property
-    def value(self): # -> float:
+    def value(self) -> float:
         ...
     
     def fill(self): # -> None:
