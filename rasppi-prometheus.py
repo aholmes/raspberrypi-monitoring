@@ -17,12 +17,12 @@ class Fan:
     _gauge: Gauge
     _fan: OutputDevice
 
-    def __init__(self, gpio_pin):
+    def __init__(self, gpio_pin: int):
         self._gauge = Gauge("fan", "Fan", ["state"])
         self._fan = OutputDevice(gpio_pin)
         self._set_gauge_state(0)
 
-    def _set_gauge_state(self, state):
+    def _set_gauge_state(self, state: int):
         self._gauge.labels("state").set(state)
 
     def read_fan_state(self):
@@ -32,14 +32,14 @@ class Fan:
 
 class PiAware:
     _gauge: Gauge
-    _aircraft_json_path = None
+    _aircraft_json_path: str
 
-    def __init__(self, aircraft_json_path):
+    def __init__(self, aircraft_json_path: str):
         self._gauge = Gauge("aircraft", "Aircraft", ["total"])
         self._aircraft_json_path = aircraft_json_path
         self._set_gauge_total(0)
 
-    def _set_gauge_total(self, total):
+    def _set_gauge_total(self, total: int):
         self._gauge.labels("total").set(total)
 
     def read_total_aircraft(self):
