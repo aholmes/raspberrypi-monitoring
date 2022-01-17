@@ -109,12 +109,43 @@ class PiAwareWeather:
             cachedir=selections.get("cachedir")
         ).strip()
         
+        temperature = 0
+        humidity = 0
+        winddirection = 0
+        windspeed = 0
+        conditions = 0
+
+        try:
+            temperature = self._re_temperature.findall(metar)[0]
+        except Exception as e:
+            log.info(e)
+
+        try:
+            humidity = self._re_humidity.findall(metar)[0]
+        except Exception as e:
+            log.info(e)
+
+        try:
+            winddirection = self._re_winddirection.findall(metar)[0]
+        except Exception as e:
+            log.info(e)
+
+        try:
+            windspeed = self._re_windspeed.findall(metar)[0]
+        except Exception as e:
+            log.info(e)
+
+        try:
+            conditions = self._re_conditions.findall(metar)[0]
+        except Exception as e:
+            log.info(e)
+
         self._set_gauge(
-            self._re_temperature.findall(metar)[0],
-            self._re_humidity.findall(metar)[0],
-            self._re_winddirection.findall(metar)[0],
-            self._re_windspeed.findall(metar)[0],
-            self._re_conditions.findall(metar)[0]
+            temperature,
+             humidity,
+             winddirection,
+             windspeed,
+             conditions
         )
 
     
