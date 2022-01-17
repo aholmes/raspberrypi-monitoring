@@ -8,7 +8,6 @@ from os import getenv
 from prometheus_client import Gauge, start_http_server
 from gpiozero import OutputDevice
 from dotenv import dotenv_values
-import sys
 sys.path.insert(1, "/usr/share/weather-util")
 import weather
 
@@ -61,7 +60,7 @@ class PiAwareWeather:
 
     _gauge: Gauge
     _weather_argument: str
-    _weather_selections = None
+    _weather_selections: weather.Selections
 
     def __init__(self):
         location_config = dotenv_values("/var/cache/piaware/location.env")
