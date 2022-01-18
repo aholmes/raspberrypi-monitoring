@@ -142,10 +142,10 @@ class PiAwareWeather:
 
         self._set_gauge(
             temperature,
-             humidity,
-             winddirection,
-             windspeed,
-             conditions
+            humidity,
+            winddirection,
+            windspeed,
+            conditions
         )
 
     
@@ -154,8 +154,6 @@ if __name__ == "__main__":
     fan = Fan(gpio_pin=14)
     piaware = PiAware(aircraft_json_path="/run/dump1090-fa/aircraft.json")
     piaware_weather = PiAwareWeather()
-
-    piaware_weather.read_weather()
 
     # Expose metrics
     metrics_port = 9200
