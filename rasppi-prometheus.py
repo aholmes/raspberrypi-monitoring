@@ -47,11 +47,14 @@ class PiAware:
         self._gauge.labels("total").set(total)
 
     def read_total_aircraft(self):
-        with open(self._aircraft_json_path) as aircraft_json:
-            aircraft = json.load(aircraft_json)
-            total_aircraft = len(aircraft["aircraft"])
-            log.info(f"Aircraft total is: {total_aircraft}")
-            self._set_gauge_total(total_aircraft)
+        aircraft_json: str
+        with open(self._aircraft_json_path) as aircraft_json_file:
+            aircraft_json = aircraft_json_file.read()
+
+        aircraft = json.loads(aircraft_json)
+        total_aircraft = len(aircraft["aircraft"])
+        log.info(f"Aircraft total is: {total_aircraft}")
+        self._set_gauge_total(total_aircraft)
 
 class PiAwareWeather:
     """
