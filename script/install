@@ -4,15 +4,15 @@ set -e
 
 cd "$(dirname "$0")/.."
 
-echo "=> Installing fan controller...\n"
+echo "=> Installing rasppi-prometheus...\n"
 sudo cp rasppi-prometheus.py /usr/local/bin/
 sudo chmod +x /usr/local/bin/rasppi-prometheus.py
 
-echo "=> Starting fan controller...\n"
+echo "=> Starting rasppi-prometheus...\n"
 sudo cp rasppi-prometheus.sh /etc/init.d/
 sudo chmod +x /etc/init.d/rasppi-prometheus.sh
 
 sudo update-rc.d rasppi-prometheus.sh defaults
 sudo /etc/init.d/rasppi-prometheus.sh start
 
-echo "Fan controller installed."
+echo "rasppi-prometheus installed."
